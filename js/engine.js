@@ -186,3 +186,18 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 })(this);
+// allEnemies = [];
+//         gem = new Gem();
+//         player = new Player();
+
+//         ctx.font = 'bold 48pt Arial';
+//         ctx.textAlign = 'center';
+//         ctx.strokeStyle = 'black';
+//         ctx.fillStyle = 'white';
+//         ctx.strokeText('Game Over' , canvas.width / 2 , 200);
+//         ctx.fillText('Game Over' , canvas.width / 2 , 200);
+
+//         ctx.font = 'bold 30pt Arial';
+//         ctx.textAlign = 'center';
+//         ctx.fillStyle = 'green';
+//         ctx.fillText(gem.message , canvas.width / 2 , 250);
