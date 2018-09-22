@@ -1,3 +1,12 @@
+// Game variales like life and number of gems that can be
+// 
+let GameVariables = function() {
+    this.lives = 3;
+    this.gemCount = 5;
+}
+
+let game = new GameVariables();
+
 // Enemies our player must avoid
 const Enemy = function(startX,startY) {
     // Variables applied to each of our instances go here,
@@ -32,8 +41,10 @@ Enemy.prototype.update = function(dt) {
         player.postnX + 40 > this.postnX &&
         player.postnY < this.postnY + 30 &&
         player.postnY + 30 > this.postnY) {
-            if(player.lives >= 1){
-                --player.lives;
+            if(game.lives <= 1){
+                gameOver();
+            }else{
+                game.lives--;
                 player.postnY = 400;
                 player.postnX = 200;
             }
@@ -58,7 +69,7 @@ const Player = function (startX,startY) {
     this.sprite = 'images/char-cat-girl.png';
 
     //Number of lives
-    this.lives = 3;
+    // this.lives = 3;
 }
 //Assign Player.prototype to delegate to Enemy.prototype to borrow 
 //the render() method from the Enemy class.
@@ -110,22 +121,23 @@ Player.prototype.handleInput = function(params) {
 
 Player.prototype.variables = function () {
     const canvas = document.querySelector('canvas');
+    canvas.style.cssText = "position: relative";
     ctx.clearRect(0, 20 , canvas.width , 25);
     ctx.font = 'bold 20pt coda';
     ctx.lineWidth = 3;
 
     ctx.textAlign = 'start';
     ctx.fillStyle = 'green';
-    ctx.fillText('Gem : '+ gem.gemCount,0,40);
+    ctx.fillText('Gem : '+ game.gemCount,0,40);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'orange';
-    ctx.fillText('lives : '+ this.lives, canvas.width / 2 ,40);
+    ctx.fillText('lives : '+ game.lives, canvas.width / 2 ,40);
 }
+
 
 const Gem = function(startX,startY) {
     Enemy.call(this,startX,startY);
-    this.gemCount = 5;
     this.message = '';
     //change color of gem randomly
     const gemImages = ['Gem Blue.png','Gem Orange.png','Gem Green.png'];
@@ -140,10 +152,11 @@ Gem.prototype.update = function () {
         player.postnX + 20 > this.postnX &&
         player.postnY < this.postnY + 20 &&
         player.postnY + 20 > this.postnY){
-            if (this.gemCount < 1) {
-                this.message = 'Congratulations';   
+            if (game.gemCount <= 1) {
+                this.message = 'Congratulations';
+                gameOver();
             }else{
-                --this.gemCount;
+                game.gemCount--;
                 this.message = 'Nice try. You can do better';
                 this.postnX = gemXPostn[randomNum(gemXPostn.length)];
                 this.postnY = gemYPostn[randomNum(gemYPostn.length)];
@@ -161,9 +174,9 @@ const enemy2 = new Enemy(0,145);
 const enemy3 = new Enemy(200,230);
 const enemy4 = new Enemy(200,145);
 
-const player = new Player(200,400);
-const gem = new Gem(300,150);
-const allEnemies = [enemy1,enemy2,enemy3,enemy4];
+let player = new Player(200,400);
+let gem = new Gem(300,150);
+let allEnemies = [enemy1,enemy2,enemy3,enemy4];
 
 
 // This listens for key presses and sends the keys to your
@@ -187,3 +200,29 @@ const gemYPostn = [70,145,230];
 function randomNum(len) {
     return Math.floor(Math.random() * len);
 }
+
+let overlayDiv = document.querySelector('.overlay');
+
+//Modal displayed when game is over
+let gameOver = function(){
+    allEnemies = [];
+    let docFrag = document.createDocumentFragment();
+    overlayDiv.classList.remove('hidden');
+    overlayDiv.innerHTML = `<div id="modal">
+        <span>Game Over</span>
+        <div id="score_message">${gem.message}</div>
+        <input type="button" id="reset" onclick="hideModal()" value="reset"/>
+        </div>`;
+    docFrag.appendChild(overlayDiv);
+    document.body.appendChild(docFrag);
+}
+
+function hideModal(){
+    overlayDiv.classList.add('hidden');
+    allEnemies = [enemy1,enemy2,enemy3,enemy4];
+    player = new Player(200,400);
+    gem = new Gem(300,150);
+    game.gemCount = 5;
+    game.lives = 3;
+}
+
